@@ -8,7 +8,9 @@ load_dotenv()
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    await update.message.reply_text('Hello! I am high-speed-trading bot.')
+    user_id = update.effective_user.id
+    # await update.message.reply_text('Hello! I am high-speed-trading bot.')
+    await update.message.reply_text(f"Hello! I am high-speed-trading bot. \n Your Telegram user Id is {user_id}.")
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text('Help command!')
