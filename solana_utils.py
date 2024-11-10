@@ -1,3 +1,4 @@
+import time
 from solana.rpc.api import Client
 from solders.pubkey import Pubkey
 from solana.rpc.core import RPCException
@@ -26,12 +27,15 @@ def get_user_wallet_info(db, user_id):
         print(f"Invalid wallet address: {address}")
         return {"address": address, "sol_balance": 0, "usdt_balance": 0}  # Handle invalid address
 
-    try:
-        response = solana_client.get_balance(Pubkey.from_string(address))
-        sol_balance = response.value  # Access the value directly from the response object
-    except RPCException as e:
-        print(f"Error fetching SOL balance: {e}")
-        sol_balance = 0  # Default to 0 if there's an error
+    for attempt in range(3):
+        try:
+            response = solana_client.get_balance(Pubkey.from_string(address))
+            sol_balance = response.value  # Access the value directly from the response object
+            break
+        except RPCException as e:
+            print(f"Error fetching SOL balance: {e}")
+            time.sleep(2)
+            sol_balance = 0  # Default to 0 if there's an error
 
     # Placeholder for USDT balance (real implementation would require a separate API call)
     usdt_balance = 0  # Replace with actual logic to fetch USDT balance

@@ -37,12 +37,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Create inline buttons
     keyboard = [
         [InlineKeyboardButton("💧 Refresh", callback_data='refresh')],
-        [InlineKeyboardButton("📈 Copy Trading", callback_data='copy_trading')],
-        [InlineKeyboardButton("📉 Trading", callback_data='trading')],
-        [InlineKeyboardButton("💰 Deposit", callback_data='deposit')],
-        [InlineKeyboardButton("🚪 Withdraw", callback_data='withdraw')],
-        [InlineKeyboardButton("🎉 Invite", callback_data='invite')],
-        [InlineKeyboardButton("❓ Help", callback_data='help')]
+        [InlineKeyboardButton("📈 Copy Trading", callback_data='copy_trading'),
+        InlineKeyboardButton("📉 Trading", callback_data='trading')],
+        [InlineKeyboardButton("💰 Deposit", callback_data='deposit'),
+        InlineKeyboardButton("🚪 Withdraw", callback_data='withdraw')],
+        [InlineKeyboardButton("🎉 Invite", callback_data='invite'),
+        InlineKeyboardButton("❓ Help", callback_data='help')]
     ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
