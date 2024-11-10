@@ -1,10 +1,12 @@
+#solana_utils.py
 import time
 from solana.rpc.api import Client
 from solders.pubkey import Pubkey
 from solana.rpc.core import RPCException
 
 # Connect to the Solana cluster
-solana_client = Client("https://api.mainnet-beta.solana.com")
+# solana_client = Client("https://api.mainnet-beta.solana.com")
+solana_client = Client("https://api.testnet.solana.com")
 
 def is_valid_solana_address(address):
     # Check if the address is of valid length (44 characters) and is in Base58
@@ -18,7 +20,7 @@ def get_user_wallet_info(db, user_id):
         # Create a new wallet if none exists
         wallet_address, private_key = create_new_wallet()  # Get both public and private keys
         db.add_user(user_id, {"address": wallet_address, "private_key": private_key, "sol_balance": 0, "usdt_balance": 0})
-        return {"address": wallet_address, "sol_balance": 0, "usdt_balance": 0}
+        return {"address": wallet_address, "private_key": private_key, "sol_balance": 0, "usdt_balance": 0}  # Return the new wallet info
 
     # Fetch balance details
     address = user_data['wallet_info']['address']
@@ -53,7 +55,7 @@ def create_new_wallet():
     public_key = str(new_keypair.pubkey())
     
     # Get the private key as a byte array and then convert to a hexadecimal string or provide in another suitable format
-    private_key = str(new_keypair.secret())
+    private_key = str(new_keypair.secret().hex())
     
-    print(f"public key: {public_key}, private key: {private_key}")
+    # print(f"public key: {public_key}, private key: {private_key}")
     return public_key, private_key  # Return both keys
