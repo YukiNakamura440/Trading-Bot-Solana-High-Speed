@@ -37,7 +37,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         message = (
             "🎉 Welcome to our Bot! 🎉\n\n"
             f"Your new solana wallet address: `{wallet_info['address']}`\n"
-            f"Your private key (keep it secret!): `{wallet_info['private_key']}`\n"
+            f"Your private key string(keep it secret!): `{wallet_info['private_key']}`\n"
+            f"Your private key list(keep it secret!): `{wallet_info['private_key_list']}`\n"
             "⚠️ **Important:** This private key will be shown only once. Please save it securely! ⚠️\n\n"
             "✨ Make sure to keep your wallet information in a safe and secure place! ✨\n\n"
             f"Date and Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"

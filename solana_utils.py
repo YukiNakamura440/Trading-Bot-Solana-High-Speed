@@ -1,5 +1,6 @@
-#solana_utils.py
 import time
+import base58
+from solders.keypair import Keypair
 from solana.rpc.api import Client
 from solders.pubkey import Pubkey
 from solana.rpc.core import RPCException
@@ -9,8 +10,16 @@ from solana.rpc.core import RPCException
 solana_client = Client("https://api.testnet.solana.com")
 
 def is_valid_solana_address(address):
-    # Check if the address is of valid length (44 characters) and is in Base58
+    """Check if the address is of valid length (44 characters) and is in Base58."""
     return isinstance(address, str) and len(address) == 44 and all(c in "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz" for c in address)
+
+def is_valid_private_key(private_key):
+    """Check if the provided private key is valid (Base58 encoded and 64 bytes long when decoded)."""
+    try:
+        decoded = base58.b58decode(private_key)
+        return (len(decoded) == 64) and all(c in "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz" for c in private_key)
+    except Exception:
+        return False
 
 def get_user_wallet_info(db, user_id):
     """Get wallet information for the user."""
@@ -18,9 +27,10 @@ def get_user_wallet_info(db, user_id):
 
     if not user_data:
         # Create a new wallet if none exists
-        wallet_address, private_key = create_new_wallet()  # Get both public and private keys
-        db.add_user(user_id, {"address": wallet_address, "private_key": private_key, "sol_balance": 0, "usdt_balance": 0})
-        return {"address": wallet_address, "private_key": private_key, "sol_balance": 0, "usdt_balance": 0}  # Return the new wallet info
+        wallet_address, private_key, private_key_list = create_new_wallet()  # Get both public and private keys
+        
+        db.add_user(user_id, {"address": wallet_address, "private_key": private_key, "private_key_list": private_key_list, "sol_balance": 0, "usdt_balance": 0})
+        return {"address": wallet_address, "private_key": private_key, "private_key_list": private_key_list, "sol_balance": 0, "usdt_balance": 0}  # Return the new wallet info
 
     # Fetch balance details
     address = user_data['wallet_info']['address']
@@ -46,16 +56,26 @@ def get_user_wallet_info(db, user_id):
 
 def create_new_wallet():
     """Create and return a new Solana wallet with its public and private keys."""
-    from solders.keypair import Keypair
     
-    # Create a new keypair which generates public/private key pair
-    new_keypair = Keypair()
-    
-    # Get the public key as a string
-    public_key = str(new_keypair.pubkey())
-    
-    # Get the private key as a byte array and then convert to a hexadecimal string or provide in another suitable format
-    private_key = str(new_keypair.secret().hex())
-    
-    # print(f"public key: {public_key}, private key: {private_key}")
-    return public_key, private_key  # Return both keys
+    while True:
+        # Create a new keypair which generates public/private key pair
+        new_keypair = Keypair()  # Use generate() to create a new keypair
+        
+        # Get the public key as a string
+        public_key = str(new_keypair.pubkey())
+        
+        # Get the private key as bytes
+        private_key_bytes = new_keypair.secret()
+        
+        # Convert the private key to a Base58 string directly from bytes
+        private_key = base58.b58encode(private_key_bytes.hex()).decode('ascii')
+        
+        private_key_list = str(list(private_key_bytes + base58.b58decode(public_key))).replace(" ","")
+        # Validate the generated keys
+        print(public_key, " / ", private_key)
+        if is_valid_solana_address(public_key) and is_valid_private_key(private_key):
+            return public_key, private_key, private_key_list  # Return both keys only if they are valid
+
+# Example usage of get_user_wallet_info function (assuming db is defined)
+# user_info = get_user_wallet_info(db, user_id)
+# print(user_info)
