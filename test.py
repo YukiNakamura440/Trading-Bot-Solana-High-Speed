@@ -17,7 +17,7 @@ def create_solana_wallet():
     print(public_key)
     print(list(base58.b58decode(public_key)))
     print(private_key_bytes.hex())
-    
+        private_key = base58.b58encode(private_key_bytes.hex()).decode('ascii')
     # Convert the private key bytes to a list of integers
     private_key_list = list(private_key_bytes)
     print(private_key_list)  # Print the private key in the desired format
