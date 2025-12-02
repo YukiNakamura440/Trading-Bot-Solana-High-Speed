@@ -12,7 +12,6 @@ load_dotenv()
 
 # Set up logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
 # Initialize MongoDB
 mongo_client = MongoDB(os.getenv('MONGO_URI'))
 
